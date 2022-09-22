@@ -1,6 +1,6 @@
 import { Formik, Form, Field } from 'formik';
 import css from 'components/ContactForm/ContactForm.module.css';
-import * as yup from 'yup';
+
 export default function ContactForm({ onSubmit }) {
   const initialValues = {
     name: '',
