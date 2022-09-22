@@ -1,61 +1,48 @@
-import { Component } from 'react';
-import { nanoid } from 'nanoid';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import css from 'components/ContactForm/ContactForm.module.css';
-export default class ContactForm extends Component {
-  state = {
+import * as yup from 'yup';
+export default function ContactForm({ onSubmit }) {
+  const initialValues = {
     name: '',
     number: '',
   };
-  nameId = nanoid();
-  numberId = nanoid();
+  const schema = yup.object().shape({
+    name: yup
+      .string()
+      .min(2, 'Too Short!')
+      .max(70, 'Too Long!')
+      .required('Required'),
+    number: yup.string().min(6).max(16).required(),
+  });
 
-  handleChange = ev => {
-    const { name, value } = ev.target;
-    this.setState({
-      [name]: value,
-    });
+  const handelSubmit = (values, { resetForm }) => {
+    resetForm();
+    onSubmit(values);
   };
 
-  handelSubmit = ev => {
-    ev.preventDefault();
-    const { name, number } = this.state;
-    this.props.onSubmit({ name, number });
-    this.setState({
-      name: '',
-      number: '',
-    });
-  };
-  render() {
-    const { nameId, numberId, handelSubmit, handleChange } = this;
-    return (
-      <form onSubmit={handelSubmit}>
-        <label htmlFor={nameId}>Name</label>
-        <input
-          id={nameId}
-          type="text"
-          name="name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-          value={this.state.name}
-          onChange={handleChange}
-        />
-        <label htmlFor={numberId}>Number</label>
-        <input
-          id={numberId}
-          type="tel"
-          name="number"
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-          value={this.state.number}
-          onChange={handleChange}
-        />
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={schema}
+      onSubmit={handelSubmit}
+    >
+      <Form>
+        <label htmlFor="name">
+          Name
+          <Field type="text" name="name" />
+          <ErrorMessage name="name" />
+        </label>
+
+        <label htmlFor="number">
+          Number
+          <Field type="tel" name="number" />
+          <ErrorMessage component="div" name="number" />
+        </label>
 
         <button className={css.button} type="submit">
           Add contact
         </button>
-      </form>
-    );
-  }
+      </Form>
+    </Formik>
+  );
 }
