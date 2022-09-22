@@ -1,4 +1,4 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import css from 'components/ContactForm/ContactForm.module.css';
 import * as yup from 'yup';
 export default function ContactForm({ onSubmit }) {
@@ -6,14 +6,6 @@ export default function ContactForm({ onSubmit }) {
     name: '',
     number: '',
   };
-  const schema = yup.object().shape({
-    name: yup
-      .string()
-      .min(2, 'Too Short!')
-      .max(70, 'Too Long!')
-      .required('Required'),
-    number: yup.string().min(6).max(16).required(),
-  });
 
   const handelSubmit = (values, { resetForm }) => {
     resetForm();
@@ -21,22 +13,28 @@ export default function ContactForm({ onSubmit }) {
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={schema}
-      onSubmit={handelSubmit}
-    >
+    <Formik initialValues={initialValues} onSubmit={handelSubmit}>
       <Form>
         <label htmlFor="name">
           Name
-          <Field type="text" name="name" />
-          <ErrorMessage name="name" />
+          <Field
+            type="text"
+            name="name"
+            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+            required
+          />
         </label>
 
         <label htmlFor="number">
           Number
-          <Field type="tel" name="number" />
-          <ErrorMessage component="div" name="number" />
+          <Field
+            type="tel"
+            name="number"
+            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+            required
+          />
         </label>
 
         <button className={css.button} type="submit">
